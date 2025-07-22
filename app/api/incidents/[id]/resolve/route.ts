@@ -1,27 +1,26 @@
 import { PrismaClient } from '@prisma/client';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(
-  request: Request,
+export async function PATCH(
+  request: NextRequest,
   context: { params: { id: string } }
 ) {
-  const incidentId = parseInt(context.params.id);
+  const id = parseInt(context.params.id);
 
-  if (isNaN(incidentId)) {
-    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+  if (isNaN(id)) {
+    return NextResponse.json({ error: 'Invalid incident ID' }, { status: 400 });
   }
 
   try {
-    const updated = await prisma.incident.update({
-      where: { id: incidentId },
+    const incident = await prisma.incident.update({
+      where: { id },
       data: { resolved: true },
     });
 
-    return NextResponse.json({ success: true, incident: updated });
-  } catch (err) {
-    console.error('Error updating incident:', err);
-    return NextResponse.json({ error: 'Update failed' }, { status: 500 });
+    return NextResponse.json({ success: true, incident });
+  } catch (error) {
+    return NextResponse.json({ error: 'Incident not found' }, { status: 404 });
   }
 }
