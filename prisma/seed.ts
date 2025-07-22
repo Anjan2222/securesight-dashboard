@@ -1,25 +1,18 @@
 import { PrismaClient } from '@prisma/client';
-
 const prisma = new PrismaClient();
 
 async function main() {
-  // Seed cameras first
+  // Delete child (Incident) before parent (Camera)
+  await prisma.incident.deleteMany();
+  await prisma.camera.deleteMany();
+
   await prisma.camera.createMany({
     data: [
-      {
-        id: 1,
-        name: 'Gate Cam',
-        location: 'Entrance Gate',
-      },
-      {
-        id: 2,
-        name: 'Warehouse Cam',
-        location: 'Warehouse',
-      },
+      { id: 1, name: 'Gate Cam', location: 'Entrance Gate' },
+      { id: 2, name: 'Warehouse Cam', location: 'Warehouse' },
     ],
   });
 
-  // Then seed incidents referencing valid cameraId
   await prisma.incident.createMany({
     data: [
       {
@@ -43,9 +36,12 @@ async function main() {
 }
 
 main()
-  .then(() => prisma.$disconnect())
-  .catch((e) => {
-    console.error(e);
-    prisma.$disconnect();
+  .then(() => {
+    console.log('✅ Database seeded successfully');
+    return prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error('❌ Seed failed:', e);
+    await prisma.$disconnect();
     process.exit(1);
   });
