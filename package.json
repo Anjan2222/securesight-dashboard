@@ -20,6 +20,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.5.2",
+    "rimraf": "^4.4.1",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
