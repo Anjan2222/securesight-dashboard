@@ -3,8 +3,11 @@ import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
-  const incidentId = parseInt(params.id);
+export async function POST(
+  request: Request,
+  context: { params: { id: string } }
+) {
+  const incidentId = parseInt(context.params.id);
 
   if (isNaN(incidentId)) {
     return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
@@ -22,4 +25,3 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json({ error: 'Update failed' }, { status: 500 });
   }
 }
- 
